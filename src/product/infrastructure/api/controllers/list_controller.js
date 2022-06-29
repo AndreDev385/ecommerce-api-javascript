@@ -1,6 +1,10 @@
+const uuid = require("uuid");
 const Memrepo = require("../../repository/memrepo");
 const ListUsecase = require("../../../application/usecases/list_usecase");
-const uuid = require("uuid");
+const {
+  ProductListRequestObject,
+} = require("../../request_objects/list_request_objects");
+const { STATUS_CODES } = require("./index");
 
 const data = [
   {
@@ -21,10 +25,17 @@ const data = [
 ];
 
 const listController = (req, res) => {
+  let qryParams = {
+    filters: req.query,
+  };
+
+  console.log("params", qryParams);
+
+  const request = ProductListRequestObject.fromObj(qryParams);
   const repository = new Memrepo(data);
   const listUsecase = new ListUsecase(repository);
-  const result = listUsecase.execute();
-  res.json(result);
+  const result = listUsecase.execute(request);
+  res.json(result.value())
 };
 
 module.exports = {
